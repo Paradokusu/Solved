@@ -8,4 +8,5 @@ add_executable(Solved main.cpp)
 ### Luogu
 
 add_executable(P2010 Luogu/P2010/P2010.cpp)
+add_executable(P2058 Luogu/P2058/P2058.cpp)
 add_executable(P7911 Luogu/P7911/P7911.cpp)
