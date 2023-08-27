@@ -1,3 +1,7 @@
+### Cpp template
+# .exe files
+*.exe
+
 ### Windows template
 # Windows thumbnail cache files
 Thumbs.db
