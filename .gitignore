@@ -1,3 +1,7 @@
+### OI Files
+.cph/
+.vscode/
+
 ### Cpp template
 # .exe files
 *.exe
