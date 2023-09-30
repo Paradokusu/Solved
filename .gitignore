@@ -1,4 +1,5 @@
 ### OI Files
+*.cpp__tests
 .cph/
 .vscode/
 
