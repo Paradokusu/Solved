@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 
-using namespace std;
 using i64 = long long;
 
 constexpr int N = 5e5 + 7;
