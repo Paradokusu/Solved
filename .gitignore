@@ -2,6 +2,8 @@
 *.cpp__tests
 .cph/
 .vscode/
+*.in
+*.out
 
 ### Cpp template
 # .exe files
