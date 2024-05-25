@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
- 
+
 bool isPrime(int x) {
 	if (x == 0 || x == 1) return false;
 	for (int i = 2; i * i <= x; i++)
@@ -7,7 +7,7 @@ bool isPrime(int x) {
 			return false;
 	return true;
 }
- 
+
 void solve() {
 	int t;
 	std::cin >> t;
@@ -19,11 +19,6 @@ void solve() {
 		int pos = 1;
 		for (int i = 0; i < s.size(); i++)
 			a[pos++] = s[i] - '0';
- 
-		/*for (int i = 1; i <= pos - 1; i++)
-			std::cout << a[i] << " ";
-		std::cout << std::endl;*/
- 
 		for (int i = 1; i <= pos - 2; i++) {
 			if (flag) break;
 			for (int j = i + 1; j <= pos - 1; j++) {
@@ -37,11 +32,11 @@ void solve() {
 		if (!flag) std::cout << "-1" << std::endl;
 	}
 }
- 
+
 int main() {
 	std::ios::sync_with_stdio(false);
 	std::cin.tie(nullptr), std::cout.tie(nullptr);
- 
+
 	solve();
 	return 0;
 }

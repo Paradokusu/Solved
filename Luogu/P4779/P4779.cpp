@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-#include <bits/extc++.h>
 
 constexpr int inf = 1e9;
 
@@ -32,7 +31,7 @@ int main() {
 	std::vector<int> dis(n + 1);
 	std::vector<bool> vis(n + 1);
 	std::function<void()> Dijkstra = [&]() {
-		__gnu_pbds::priority_queue<node> q;
+		std::priority_queue<node> q;
 		std::fill(dis.begin(), dis.end(), inf);
 		dis[s] = 0;
 

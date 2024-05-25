@@ -1,28 +1,24 @@
 #include <bits/stdc++.h>
 
+using namespace std;
 using i64 = long long;
+
 constexpr int N = 2e6 + 5;
-constexpr int Alp = 29;		// Hash 自然溢出
+constexpr int Alp = 29;
 
 int n;
-i64 ans;
-std::string s;
-std::array<i64, N> _Hash;
-std::stack<i64> St, Pos;
-std::unordered_set<i64> Set;
-std::unordered_map<i64, i64> Map;
+i64 ans, _Hash[N];
+char s[N];
+
+stack<i64> St, Pos;
+unordered_set<i64> Set;
+unordered_map<i64, i64> Map;
 
 int main() {
-	// freopen("game.in", "r", stdin);
-	// freopen("game.out", "w", stdout);
-
-	std::ios::sync_with_stdio(false);
-	std::cin.tie(nullptr), std::cout.tie(nullptr);
-
-	std::cin >> n >> s;
+	scanf("%d", &n);
+	scanf(" %s", s + 1);
 
 	/* Init */
-	s = '#' + s;
 	Set.insert(0);
 	Map[0]++;
 
@@ -38,11 +34,10 @@ int main() {
 			Map[_Hash[i]]++;
 		}
 	}
-
 	for (auto i : Set)
 		ans += Map[i] * (Map[i] - 1) / 2;
 
 	/* Output */
-	std::cout << ans << "\n";
+	printf("%lld\n", ans);
 	return 0;
 }

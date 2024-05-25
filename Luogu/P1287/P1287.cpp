@@ -1,46 +1,24 @@
 #include <bits/stdc++.h>
 
+using namespace std;
 using i64 = long long;
 
-i64 expow(i64 a, i64 b) {
-	i64 res = 1;
-	
-	for (; b; b >>= 1) {
-		if (b & 1)
-			res = 1ll * res * a;
+constexpr int N = 20;
 
-		a = 1ll * a * a;
-	}
-	
-	return res;
-}
-
-i64 C(i64 a, i64 b) {	// 求组合数
-	if (a < b)
-		return 0;
-	
-	i64 res = 1;
-	
-	for (i64 i = a; i > a - b; i--) {
-		res *= i;
-		res /= (a - i + 1);
-	}
-	
-	return res;
-}
+int n, r;
+i64 ans = 1, S[N][N];
 
 int main() {
-	std::ios::sync_with_stdio(false);
-	std::cin.tie(nullptr), std::cout.tie(nullptr);
+	scanf("%d %d", &n, &r);
+	for (int i = 1; i <= r; i++)
+		ans *= i;
 
-	i64 n, r;
-	std::cin >> n >> r;
-	i64 ans = 0;
+	S[1][1] = 1;
+	for (int i = 2; i <= n; i++)
+		for (int j = 1; j <= i; j++)
+			S[i][j] = S[i - 1][j - 1] + j * S[i - 1][j];
+	ans *= S[n][r];
 	
-	for (i64 k = 0; k <= r - 1; k++) {
-		ans += ((k & 1) ? - 1 : 1) * C(r, k) * expow(r - k, n);
-	}
-	
-	std::cout << ans << "\n";
+	printf("%lld\n", ans);
 	return 0;
 }

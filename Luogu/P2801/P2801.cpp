@@ -1,59 +1,131 @@
 #include <bits/stdc++.h>
 
-using namespace std;
-constexpr int N = 1e6 + 5;
+constexpr int N = 1e6 + 7;
 
-int n, q, len;
-int a[N], id[N], addtag[N];
-vector<int> ve[N];
+int n, m;
+int block, num;
+int a[N], L[N], R[N], bel[N], sum[N], add[N];
 
-void reset(int x) {
-	ve[x].clear();
-	for (int i = (x - 1) * len + 1; i <= min(x * len, n); i++)
-		ve[x].push_back(a[i]);
-	sort(ve[x].begin(), ve[x].end());
-}
-
-void add(int l, int r, int c) {
-	for (int i = l; i <= min(id[l] * len, r); i++) a[i] += c;
-	reset(id[l]);
-	if (id[l] != id[r]) {
-		for (int i = (id[r] - 1) * len + 1; i <= r; i++) a[i] += c;
-		reset(id[r]);
+void Build() {
+	block = std::sqrt(n);
+	num = n / block;
+	
+	if (n % block)
+		num++;
+	
+	for (int i = 1; i <= num; i++) {
+		L[i] = (i - 1) * block + 1;
+		R[i] = i * block;
 	}
-	for (int i = id[l] + 1; i <= id[r] - 1; i++) addtag[i] += c;
+	
+	R[num] = n;
+	
+	for (int i = 1; i <= n; i++) {
+		bel[i] = (i - 1) / block + 1;
+		sum[i] = a[i];
+	}
+	
+	for (int i = 1; i <= num; i++) {
+		std::sort(sum + L[i], sum + R[i] + 1);
+	}
 }
 
-int query(int l, int r, int x) {
+void ReSort(int x) {	
+	for (int i = L[x]; i <= R[x]; i++) {
+		sum[i] = a[i];
+	}
+	
+	std::sort(sum + L[x], sum + R[x] + 1);
+}
+
+void Update(int l, int r, int x) {
+	if (bel[l] == bel[r]) {
+		for (int i = l; i <= r; i++)
+			a[i] += x;
+		
+		ReSort(bel[l]);
+		return;
+	}
+	
+	for (int i = l; i <= R[bel[l]]; i++)
+		a[i] += x;
+	
+	ReSort(bel[l]);
+	
+	for (int i = L[bel[r]]; i <= r; i++)
+		a[i] += x;
+	
+	ReSort(bel[r]);
+	
+	for (int i = bel[l] + 1; i <= bel[r] - 1; i++)
+		add[i] += x;
+}
+
+int BinSrh(int l, int r, int x) {
+	int y = r;
+	
+	while (l <= r) {
+		int mid = (l + r) / 2;
+		
+		if (sum[mid] < x)
+			l = mid + 1;
+		else
+			r = mid - 1;
+	}
+	
+	return y - l + 1;
+}
+
+int Query(int l, int r, int x) {
 	int ans = 0;
-	for (int i = l; i <= min(id[l] * len, r); i++)
-		if (a[i] + addtag[id[l]] < x) ans++;
-	if (id[l] != id[r])
-		for (int i = (id[r] - 1) * len + 1; i <= r; i++)
-			if (a[i] + addtag[id[r]] < x) ans++;
-	for (int i = id[l] + 1; i <= id[r] - 1; i++) {
-		int t = x - addtag[i];
-		ans += lower_bound(ve[i].begin(), ve[i].end(), t) - ve[i].begin();
+	
+	if (bel[l] == bel[r]) {
+		for (int i = l; i <= r; i++)
+			if (a[i] + add[bel[i]] >= x)
+				ans++;
+		
+		return ans;
 	}
+	
+	for (int i = l; i <= R[bel[l]]; i++) {
+		if (a[i] + add[bel[i]] >= x)
+			ans++;
+	}
+	
+	for (int i = L[bel[r]]; i <= r; i++) {
+		if (a[i] + add[bel[i]] >= x)
+			ans++;
+	}
+	
+	for (int i = bel[l] + 1; i <= bel[r] - 1; i++) {
+		ans += BinSrh(L[i], R[i], x - add[i]);
+	}
+	
 	return ans;
 }
 
 int main() {
-	scanf("%d %d", &n, &q);
-	len = sqrt(n);
-	for (int i = 1; i <= n; i++) {
-		scanf("%d", &a[i]);
-		id[i] = (i - 1) / len + 1;
-		ve[id[i]].push_back(a[i]);
-	}
-	for (int i = 1; i <= id[n]; i++)
-		sort(ve[i].begin(), ve[i].end());
-	for (int i = 1; i <= q; i++) {
+	std::ios::sync_with_stdio(false);
+	std::cin.tie(nullptr), std::cout.tie(nullptr);
+	
+	std::cin >> n >> m;
+	
+	for (int i = 1; i <= n; i++)
+		std::cin >> a[i];
+		
+	Build();
+	
+	while (m--) {
 		char opt;
 		int l, r, c;
-		scanf(" %c %d %d %d", &opt, &l, &r, &c);
-		if (opt == 'M') add(l, r, c);
-		else printf("%d\n", r - l + 1 - query(l, r, c));
+		std::cin >> opt >> l >> r >> c;
+		
+		if (opt == 'M') {
+			Update(l, r, c);
+		} else {
+			std::cout << Query(l, r, c) << "\n";
+		}
 	}
+	
 	return 0;
 }
