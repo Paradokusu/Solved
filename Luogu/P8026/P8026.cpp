@@ -1,5 +1,7 @@
 #include <bits/stdc++.h>
 
+using namespace std;
+
 constexpr int N = 5e3 + 7;
 constexpr int D = 207;
 
@@ -7,10 +9,24 @@ int d, n, m;
 int weight[N];
 int w[D][N], fa[D][N], siz[D][N];
 
-std::unordered_map<int, int> Map;
-std::vector<int> v[D][N];
+struct custom_hash {
+	static uint64_t splitmix64(uint64_t x) {
+		x ^= x << 13;
+		x ^= x >> 7;
+		x ^= x << 17;
+		return x; 
+	}
+	size_t operator () (uint64_t x) const {
+		static const uint64_t FIXED_RANDOM = chrono::steady_clock::now().time_since_epoch().count(); // 时间戳
+		return splitmix64(x + FIXED_RANDOM);
+	}
+};
 
-std::mt19937 myRand(time(nullptr));
+unordered_map<int, int, custom_hash> Map;
+vector<int> v[D][N];
+
+random_device rdv;
+mt19937_64 myrand(rdv());
 
 int find(int k, int x) {
 	if (fa[k][x] != x) {
@@ -25,7 +41,7 @@ int main() {
 	scanf("%d %d %d", &d, &n, &m);
 	for (int i = 1; i <= d; i++) {
 		for (int j = 1; j <= n; j++) {
-			w[i][j] = myRand() * myRand() % myRand();
+			w[i][j] = myrand() * myrand() % myrand();
 			weight[j] += w[i][j];
 			v[i][j].emplace_back(j);
 			fa[i][j] = j;
@@ -47,7 +63,7 @@ int main() {
 			continue;
 		}
 		
-		if (siz[k][fx] > siz[k][fy]) std::swap(fx, fy);
+		if (siz[k][fx] > siz[k][fy]) swap(fx, fy);
 		fa[k][fx] = fy;
 		siz[k][fy] += siz[k][fx];
 		
