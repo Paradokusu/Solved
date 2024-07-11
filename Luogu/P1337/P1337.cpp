@@ -7,7 +7,7 @@ int n;
 int x[N], y[N], w[N];
 double ansx, ansy, dis;
 
-double myrand() { return (double)rand() / RAND_MAX; }
+double myrand() { return (double) rand() / RAND_MAX; }
 
 double calc(double fx, double fy) {
     double res = 0;
