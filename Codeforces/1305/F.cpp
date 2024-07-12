@@ -5,7 +5,7 @@ using i64 = long long;
 constexpr int N = 2e5 + 7;
 constexpr int C = 1e6;
 constexpr i64 inf = std::numeric_limits<i64>::max();
-constexpr double MAX_TIME = 2;
+constexpr double MAX_TIME = 1;
 
 int n;
 i64 ans = inf;
@@ -23,7 +23,7 @@ void init() {   // 埃筛预处理出 1e6 素数
     for (int i = 2; i <= C; i++) {
         if (!p[i]) continue;
         pri[++pri[0]] = i;
-        for (i64 j = (i64) i * i; j <= C; j++)
+        for (i64 j = (i64) i * i; j <= C; j += i)
             p[j] = 0;
     }
 }
@@ -57,7 +57,9 @@ int main() {
     std::cin >> n;
     for (int i = 1; i <= n; i++)
         std::cin >> a[i];
-    while ((double) std::clock() / CLOCKS_PER_SEC <= MAX_TIME) {
+    
+    int T = 50;
+    while (T--) {
         int ps = gen(1, n);
         // delta = 0/1/-1
         solve(a[ps] + 1);
