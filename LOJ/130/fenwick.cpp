@@ -6,7 +6,7 @@ constexpr int N = 1e6 + 7;
 
 int n, q;
 
-struct Fenwick {
+struct BIT {
     i64 tr[N << 1];
 
     int lowbit(int x) { return x & (-x); }
