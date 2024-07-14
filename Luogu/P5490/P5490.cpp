@@ -2,81 +2,82 @@
 
 using i64 = long long;
 
-constexpr int N = 2e5 + 7;
+constexpr int N = 1e6 + 7;
 
-i64 n, m;
-i64 bk[N << 1], L[N << 4], R[N << 4], len[N << 4], v[N << 4];
+struct scanLine {
+	i64 l, r, h;
+	int type;	// 权值 1/-1
+} line[N << 1];
+
+bool cmp(const scanLine &a, const scanLine &b) {
+	return a.h < b.h;
+}
 
 struct node {
-	i64 x, y0, y1, c;
-} a[N];
+	int l, r, sum;	// 被覆盖的次数
+	i64 len;	// 区间内被截的长度
+};
 
-i64 ans;
+int n, cot;
+i64 X[N << 1];
 
-std::map<i64, i64> sum;
+struct SegTree {
+	node tr[N << 2];
 
-bool cmp(const node &a, const node &b) {
-	return a.x < b.x;
-}
-
-void Build(int o, int l, int r) {
-	L[o] = l;
-	R[o] = r;
-
-	if (l == r)
-		return;
-
-	i64 mid = (l + r) >> 1;
-	Build(o << 1, l, mid);
-	Build(o << 1 | 1, mid + 1, r);
-}
-
-void Update(i64 o, i64 l, i64 r, i64 dat) {
-	if (r < L[o] || l > R[o])
-		return;
-
-	if (L[o] >= l && R[o] <= r)
-		v[o] += dat;
-	else {
-		Update(o << 1, l, r, dat);
-		Update(o << 1 | 1, l, r, dat);
+	void build(int o, int l, int r) {
+		tr[o].l = l, tr[o].r = r;
+		tr[o].len = tr[o].sum = 0;
+		if (l == r) return;
+		int mid = (l + r) >> 1;
+		build(o << 1, l, mid);
+		build(o << 1 | 1, mid + 1, r);
 	}
 
-	if (v[o])
-		len[o] = bk[R[o] + 1] - bk[L[o]];	// 减去覆盖的部分
-	else
-		len[o] = len[o << 1] + len[o << 1 | 1];
-}
+	void pushup(int o) {
+		int l = tr[o].l, r = tr[o].r;
+		if (tr[o].sum)	// 被覆盖过
+			tr[o].len = X[r + 1] - X[l];
+		else	// 直接俄合并信息
+			tr[o].len = tr[o << 1].len + tr[o << 1 | 1].len;
+	}
+
+	void modify(int o, i64 fl, i64 fr, int c) {	//fl, fr: 需要修改的实际范围
+		int l = tr[o].l, r = tr[o].r;	// 节点管辖下标范围
+		if (X[r + 1] <= fl || fr <= X[l]) return;
+		if (fl <= X[l] && X[r + 1] <= fr) {
+			tr[o].sum += c;
+			pushup(o);
+			return;
+		}
+		modify(o << 1, fl, fr, c);
+		modify(o << 1 | 1, fl, fr, c);
+		pushup(o);
+	}
+} seg;
 
 int main() {
 	std::ios::sync_with_stdio(false);
-	std::cin.tie(nullptr), std::cout.tie(nullptr);
+	std::cin.tie(nullptr);
 
 	std::cin >> n;
-
 	for (int i = 1; i <= n; i++) {
-		int x0, y0, x1, y1;
-		std::cin >> x0 >> y0 >> x1 >> y1;
-		a[i] = {x0, y0, y1, 1};
-		a[i + n] = {x1, y0, y1, -1};
-		bk[++m] = y1;
-		bk[++m] = y0;
+		int x1, x2, y1, y2;
+		std::cin >> x1 >> y1 >> x2 >> y2;
+		X[(i << 1) - 1] = x1, X[(i << 1)] = x2;
+		line[(i << 1) - 1] = {x1, x2, y1, 1};
+		line[(i << 1)] = {x1, x2, y2, -1};
 	}
 
-	std::sort(bk + 1, bk + m + 1);
-	m = std::unique(bk + 1, bk + m + 1) - bk - 1;
-
-	for (int i = 1; i <= m; i++)
-		sum[bk[i]] = i;
-
 	n <<= 1;
+	std::sort(line + 1, line + n + 1, cmp);
+	std::sort(X + 1, X + n + 1);
+	int t0t = std::unique(X + 1, X + n + 1) - X - 1;
 
-	Build(1, 1, n);
-	std::sort(a + 1, a + n + 1, cmp);
-
-	for (int i = 1; i <= n; i++) {
-		Update(1, sum[a[i].y0], sum[a[i].y1] - 1, a[i].c);
-		ans += 1ll * len[1] * (a[i + 1].x - a[i].x);
+	seg.build(1, 1, t0t - 1);
+	i64 ans = 0;
+	for (int i = 1; i < n; i++) {
+		seg.modify(1, line[i].l, line[i].r, line[i].type);
+		ans += seg.tr[1].len * (line[i + 1].h - line[i].h);
 	}
 
 	std::cout << ans << "\n";
